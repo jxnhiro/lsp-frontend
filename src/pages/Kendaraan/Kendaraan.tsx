@@ -204,14 +204,12 @@ function TambahKendaraan() {
         break;
     }
 
-    console.log(kendaraan);
     try {
       const response = await axios.post(
         "http://localhost:8000/kendaraan/tambah",
         kendaraan,
       );
-
-      console.log(response);
+      window.location.reload();
     } catch (err) {
       console.log(err);
     }
