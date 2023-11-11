@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
-import * as z from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
+import { useEffect, useState } from 'react';
+import * as z from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -11,9 +11,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import axios from "axios";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import axios from 'axios';
 import {
   Dialog,
   DialogContent,
@@ -21,15 +21,15 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { toast } from "@/components/ui/use-toast";
+} from '@/components/ui/select';
+import { toast } from '@/components/ui/use-toast';
 import {
   Card,
   CardContent,
@@ -37,7 +37,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/card';
 
 function Kendaraan() {
   const [allKendaraan, setAllKendaraan] = useState([]);
@@ -48,7 +48,7 @@ function Kendaraan() {
 
   async function getAllKendaraan() {
     try {
-      const request = await axios.get("http://localhost:8000/kendaraan");
+      const request = await axios.get('http://localhost:8000/kendaraan');
       setAllKendaraan(request.data.data);
       setLoading(false);
     } catch (err) {
@@ -67,7 +67,7 @@ function Kendaraan() {
               <DialogTrigger>
                 <Button>Tambah Kendaraan</Button>
               </DialogTrigger>
-              <DialogContent className={"h-3/4 overflow-y-scroll"}>
+              <DialogContent className={'h-3/4 overflow-y-scroll'}>
                 <DialogHeader>
                   <DialogTitle>
                     Tambahkan Kendaraan yang Ingin Anda Jual
@@ -85,13 +85,26 @@ function Kendaraan() {
                 <Card className="mt-4">
                   <CardHeader>
                     <CardTitle>
-                      {kendaraan.manufaktur} - {kendaraan.model}{" "}
+                      {kendaraan.manufaktur} - {kendaraan.model}{' '}
                       {kendaraan.tahun}
                     </CardTitle>
                     <CardDescription>Rp{kendaraan.harga}</CardDescription>
                   </CardHeader>
                   <CardContent></CardContent>
                   <CardFooter>
+                    <Dialog>
+                      <DialogTrigger>
+                        <Button>Ubah Kendaraan</Button>
+                      </DialogTrigger>
+                      <DialogContent className={'h-3/4 overflow-y-scroll'}>
+                        <DialogHeader>
+                          <DialogTitle>
+                            Ubah Kendaraan Sesuai Yang Ingin Dijual
+                          </DialogTitle>
+                          <UbahKendaraan kendaraan={kendaraan} />
+                        </DialogHeader>
+                      </DialogContent>
+                    </Dialog>
                     <p>Card Footer</p>
                   </CardFooter>
                 </Card>
@@ -111,7 +124,7 @@ const kendaraanSchema = z.object({
   manufaktur: z.string().min(2),
   harga: z.coerce.number().min(10000000),
   tipe_kendaraan: z.string(),
-  tipe_bahan_bakar: z.string().default(""),
+  tipe_bahan_bakar: z.string().default(''),
   luas_bagasi: z.coerce.number().default(0),
   ukuran_bagasi: z.coerce.number().default(0),
   kapasitas_bensin: z.coerce.number().default(0),
@@ -143,30 +156,66 @@ interface Truck extends Kendaraan {
   luas_area_kargo: number;
 }
 
-function TambahKendaraan() {
-  const [tipeKendaraan, setTipeKendaraan] = useState("MOBIL");
-  const form = useForm<z.infer<typeof kendaraanSchema>>({
-    resolver: zodResolver(kendaraanSchema),
-    defaultValues: {
-      model: "",
-      tahun: 0,
-      jumlah_penumpang: 0,
-      manufaktur: "",
-      harga: 0,
-      tipe_kendaraan: "",
-      tipe_bahan_bakar: "",
-      luas_bagasi: 0,
-      ukuran_bagasi: 0,
-      kapasitas_bensin: 0,
-      jumlah_roda_ban: 0,
-      luas_area_kargo: 0,
-    },
-  });
-  async function postKendaraan(values: z.input<typeof kendaraanSchema>) {
+function UbahKendaraan(props) {
+  const originalKendaraan = props.kendaraan;
+  const [tipeKendaraan, setTipeKendaraan] = useState(
+    props.kendaraan.tipe_kendaraan
+  );
+  console.log(originalKendaraan);
+
+  let form;
+
+  switch (props.kendaraan.tipe_kendaraan) {
+    case 'MOBIL':
+      form = useForm<z.infer<typeof kendaraanSchema>>({
+        resolver: zodResolver(kendaraanSchema),
+        defaultValues: {
+          model: originalKendaraan.model,
+          tahun: originalKendaraan.tahun,
+          jumlah_penumpang: originalKendaraan.jumlah_penumpang,
+          manufaktur: originalKendaraan.manufaktur,
+          harga: originalKendaraan.harga,
+          tipe_kendaraan: originalKendaraan.tipe_kendaraan,
+          tipe_bahan_bakar: originalKendaraan.Mobil.tipe_bahan_bakar,
+          luas_bagasi: originalKendaraan.Mobil.luas_bagasi,
+        },
+      });
+      break;
+    case 'MOTOR':
+      form = useForm<z.infer<typeof kendaraanSchema>>({
+        resolver: zodResolver(kendaraanSchema),
+        defaultValues: {
+          model: originalKendaraan.model,
+          tahun: originalKendaraan.tahun,
+          jumlah_penumpang: originalKendaraan.jumlah_penumpang,
+          manufaktur: originalKendaraan.manufaktur,
+          harga: originalKendaraan.harga,
+          tipe_kendaraan: originalKendaraan.tipe_kendaraan,
+          ukuran_bagasi: originalKendaraan.Motor.ukuran_bagasi,
+          kapasitas_bensin: originalKendaraan.Motor.kapasitas_bensin,
+        },
+      });
+      break;
+    case 'TRUCK':
+      form = useForm<z.infer<typeof kendaraanSchema>>({
+        resolver: zodResolver(kendaraanSchema),
+        defaultValues: {
+          model: originalKendaraan.model,
+          tahun: originalKendaraan.tahun,
+          jumlah_penumpang: originalKendaraan.jumlah_penumpang,
+          manufaktur: originalKendaraan.manufaktur,
+          harga: originalKendaraan.harga,
+          tipe_kendaraan: originalKendaraan.tipe_kendaraan,
+          jumlah_roda_ban: originalKendaraan.Truck.jumlah_roda_ban,
+          luas_area_kargo: originalKendaraan.Truck.luas_area_kargo,
+        },
+      });
+      break;
+  }
+  async function putKendaraan(values: z.input<typeof kendaraanSchema>) {
     let kendaraan: Mobil | Motor | Truck;
-    console.log(values);
     switch (tipeKendaraan) {
-      case "MOBIL":
+      case 'MOBIL':
         kendaraan = {
           model: values.model,
           tahun: values.tahun,
@@ -178,7 +227,7 @@ function TambahKendaraan() {
           luas_bagasi: values.luas_bagasi,
         };
         break;
-      case "MOTOR":
+      case 'MOTOR':
         kendaraan = {
           model: values.model,
           tahun: values.tahun,
@@ -190,7 +239,309 @@ function TambahKendaraan() {
           kapasitas_bensin: values.kapasitas_bensin,
         };
         break;
-      case "TRUCK":
+      case 'TRUCK':
+        kendaraan = {
+          model: values.model,
+          tahun: values.tahun,
+          jumlah_penumpang: values.jumlah_penumpang,
+          manufaktur: values.manufaktur,
+          harga: values.harga,
+          tipe_kendaraan: tipeKendaraan,
+          jumlah_roda_ban: values.jumlah_roda_ban,
+          luas_area_kargo: values.luas_area_kargo,
+        };
+        break;
+    }
+
+    try {
+      const response = await axios.put(
+        `http://localhost:8000/kendaraan/ubah/${originalKendaraan.id}`,
+        kendaraan
+      );
+      window.location.reload();
+    } catch (err) {
+      console.log(err);
+    }
+  }
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(putKendaraan)} className="space-y-8">
+        <FormField
+          control={form.control}
+          name="model"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Model</FormLabel>
+              <FormControl>
+                <Input placeholder="SUV" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="tahun"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Tahun</FormLabel>
+              <FormControl>
+                <Input type="number" placeholder="2018" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="jumlah_penumpang"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Jumlah Penumpang</FormLabel>
+              <FormControl>
+                <Input type="number" placeholder="4" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="manufaktur"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Manufaktur</FormLabel>
+              <FormControl>
+                <Input placeholder="Toyota" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="harga"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Harga</FormLabel>
+              <FormControl>
+                <Input type="number" placeholder="100000000" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="tipe_kendaraan"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Tipe Kendaraan</FormLabel>
+              <Select
+                onValueChange={(value) => {
+                  setTipeKendaraan(value);
+                  field.onChange(value);
+                  form.reset();
+                }}
+                defaultValue={originalKendaraan.tipe_kendaraan}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Pilih Tipe Kendaraan" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="MOBIL">Mobil</SelectItem>
+                  <SelectItem value="MOTOR">Motor</SelectItem>
+                  <SelectItem value="TRUCK">Truck</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormDescription></FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        {
+          {
+            MOBIL: (
+              <>
+                <FormField
+                  control={form.control}
+                  name="tipe_bahan_bakar"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Tipe Bahan Bakar</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Solar"
+                          value={originalKendaraan.Mobil.tipe_bahan_bakar}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="luas_bagasi"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Luas Bagasi</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          value={originalKendaraan.Mobil.luas_bagasi}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </>
+            ),
+
+            MOTOR: (
+              <>
+                <FormField
+                  control={form.control}
+                  name="ukuran_bagasi"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Ukuran Bagasi</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          value={originalKendaraan.Motor.ukuran_bagasi}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="kapasitas_bensin"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Kapasitas Bensin</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          value={originalKendaraan.Motor.kapasitas_bensin}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </>
+            ),
+
+            TRUCK: (
+              <>
+                <FormField
+                  control={form.control}
+                  name="jumlah_roda_ban"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Jumlah Roda Ban</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          value={originalKendaraan.Truck.jumlah_roda_ban}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="luas_area_kargo"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Luas Area Kargo</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          value={originalKendaraan.Truck.luas_area_kargo}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </>
+            ),
+          }[tipeKendaraan]
+        }
+        <Button type="submit">Submit</Button>
+      </form>
+    </Form>
+  );
+}
+function TambahKendaraan() {
+  const [tipeKendaraan, setTipeKendaraan] = useState('MOBIL');
+  const form = useForm<z.infer<typeof kendaraanSchema>>({
+    resolver: zodResolver(kendaraanSchema),
+    defaultValues: {
+      model: '',
+      tahun: 0,
+      jumlah_penumpang: 0,
+      manufaktur: '',
+      harga: 0,
+      tipe_kendaraan: '',
+      tipe_bahan_bakar: '',
+      luas_bagasi: 0,
+      ukuran_bagasi: 0,
+      kapasitas_bensin: 0,
+      jumlah_roda_ban: 0,
+      luas_area_kargo: 0,
+    },
+  });
+  async function postKendaraan(values: z.input<typeof kendaraanSchema>) {
+    let kendaraan: Mobil | Motor | Truck;
+    console.log(values);
+    switch (tipeKendaraan) {
+      case 'MOBIL':
+        kendaraan = {
+          model: values.model,
+          tahun: values.tahun,
+          jumlah_penumpang: values.jumlah_penumpang,
+          manufaktur: values.manufaktur,
+          harga: values.harga,
+          tipe_kendaraan: tipeKendaraan,
+          tipe_bahan_bakar: values.tipe_bahan_bakar,
+          luas_bagasi: values.luas_bagasi,
+        };
+        break;
+      case 'MOTOR':
+        kendaraan = {
+          model: values.model,
+          tahun: values.tahun,
+          jumlah_penumpang: values.jumlah_penumpang,
+          manufaktur: values.manufaktur,
+          harga: values.harga,
+          tipe_kendaraan: tipeKendaraan,
+          ukuran_bagasi: values.ukuran_bagasi,
+          kapasitas_bensin: values.kapasitas_bensin,
+        };
+        break;
+      case 'TRUCK':
         kendaraan = {
           model: values.model,
           tahun: values.tahun,
@@ -206,8 +557,8 @@ function TambahKendaraan() {
 
     try {
       const response = await axios.post(
-        "http://localhost:8000/kendaraan/tambah",
-        kendaraan,
+        'http://localhost:8000/kendaraan/tambah',
+        kendaraan
       );
       window.location.reload();
     } catch (err) {
