@@ -79,6 +79,9 @@ function Pesanan() {
   } else {
     return (
       <div className="h-fit">
+        <div className="w-full flex justify-start">
+          <h1>Welcome to UC-Showcase</h1>
+        </div>
         <h1 className="text-3xl">Lihat Pesanan untuk Pelanggan</h1>
         <h1>{errorMessage}</h1>
         <div className="w-full mt-8">
