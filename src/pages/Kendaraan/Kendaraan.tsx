@@ -226,7 +226,7 @@ function UbahKendaraan(props) {
       },
     });
   } else {
-    if (kendaraan.tipe_kendaraan === 'MOBIL') {
+    if (kendaraan.tipe_kendaraan === 'TRUCK') {
       form = useForm<z.infer<typeof kendaraanSchema>>({
         resolver: zodResolver(kendaraanSchema),
         defaultValues: {
