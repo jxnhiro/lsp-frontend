@@ -131,7 +131,7 @@ function Pesanan() {
                     </Link>
                     <Dialog>
                       <DialogTrigger>
-                        <Button>Edit User</Button>
+                        <Button>Edit Customer</Button>
                       </DialogTrigger>
                       <DialogContent className={'h-2/3 overflow-y-scroll'}>
                         <DialogHeader>
@@ -141,7 +141,7 @@ function Pesanan() {
                       </DialogContent>
                     </Dialog>
                     <Button onClick={() => deleteUser(customer.id_card)}>
-                      Delete User
+                      Delete Customer
                     </Button>
                   </CardContent>
                   <CardFooter></CardFooter>
